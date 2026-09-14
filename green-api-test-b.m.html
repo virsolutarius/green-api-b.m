@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <title>GREEN-API Bernur Mynzhassarov</title>
+</head>
+<body>
+
+  <h1>GREEN-API Test Panel</h1>
+
+  <h3>1. Введите данные вашего инстанса</h3>
+  <label>idInstance:</label><br>
+  <input type="text" id="idInstance"><br><br>
+
+  <label>ApiTokenInstance:</label><br>
+  <input type="text" id="apiTokenInstance"><br><br>
+
+  <h3>2. Данные для отправки сообщения / файла</h3>
+  <label>chatId (номер получателя, формат 77771234567@c.us):</label><br>
+  <input type="text" id="chatId"><br><br>
+
+  <label>Текст сообщения:</label><br>
+  <input type="text" id="message" value="Введите сообщение"><br><br>
+
+  <label>Ссылка на файл (urlFile):</label><br>
+  <input type="text" id="urlFile"><br><br>
+
+  <label>Имя файла (fileName):</label><br>
+  <input type="text" id="fileName"><br><br>
+
+  <h3>3. Нажмите нужный метод</h3>
+  <button onclick="getSettings()">getSettings</button>
+  <button onclick="getStateInstance()">getStateInstance</button>
+  <button onclick="sendMessage()">sendMessage</button>
+  <button onclick="sendFileByUrl()">sendFileByUrl</button>
+
+  <h3>4. Ответ сервера</h3>
+  <textarea id="result" rows="12" cols="70" readonly></textarea>
+
+  <script>
+    function getUrl(method) {
+      const id = document.getElementById("idInstance").value;
+      const token = document.getElementById("apiTokenInstance").value;
+      return "https://api.green-api.com/waInstance" + id + "/" + method + "/" + token;
+    }
+
+    function showResult(data) {
+      document.getElementById("result").value = JSON.stringify(data, null, 2);
+    }
+
+    function getSettings() {
+      fetch(getUrl("getSettings"))
+        .then(response => response.json())
+        .then(data => showResult(data))
+        .catch(error => showResult("Ошибка: " + error));
+    }
+
+    function getStateInstance() {
+      fetch(getUrl("getStateInstance"))
+        .then(response => response.json())
+        .then(data => showResult(data))
+        .catch(error => showResult("Ошибка: " + error));
+    }
+
+    function sendMessage() {
+      const chatId = document.getElementById("chatId").value;
+      const message = document.getElementById("message").value;
+
+      fetch(getUrl("sendMessage"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chatId: chatId, message: message })
+      })
+        .then(response => response.json())
+        .then(data => showResult(data))
+        .catch(error => showResult("Ошибка: " + error));
+    }
+
+    function sendFileByUrl() {
+      const chatId = document.getElementById("chatId").value;
+      const urlFile = document.getElementById("urlFile").value;
+      const fileName = document.getElementById("fileName").value;
+
+      fetch(getUrl("sendFileByUrl"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chatId: chatId, urlFile: urlFile, fileName: fileName })
+      })
+        .then(response => response.json())
+        .then(data => showResult(data))
+        .catch(error => showResult("Ошибка: " + error));
+    }
+  </script>
+
+</body>
+</html>
